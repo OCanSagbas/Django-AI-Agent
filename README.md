@@ -248,10 +248,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [Permit.io](https://permit.io) for authorization management
 - [TMDB](https://www.themoviedb.org/) for movie data
 
-## 📞 Support
-
-For questions or issues, please open an issue on GitHub or contact the maintainers.
-
----
-
 Built with ❤️ using Django, LangGraph, and AI
