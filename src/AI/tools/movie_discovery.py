@@ -1,6 +1,8 @@
 from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import tool
+
 from tmdb import client as tmdb_client
+
 
 @tool
 def search_movies(query: str, limit:int=5, config:RunnableConfig = {}):
@@ -25,8 +27,8 @@ def search_movies(query: str, limit:int=5, config:RunnableConfig = {}):
         limit = 25
     results = response.get("results")[:limit]
     return results
-  
-  
+    
+
 @tool
 def movie_detail(movie_id: int, config:RunnableConfig = {}):
     """

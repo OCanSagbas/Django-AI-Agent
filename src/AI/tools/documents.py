@@ -5,6 +5,8 @@ from langchain_core.tools import tool
 from django.db.models import Q
 
 from documents.models import Document
+from mypermit import permit_client as permit
+
 
 @tool
 def search_query_documents(query: str, limit:int=5, config:RunnableConfig = {}):
@@ -25,6 +27,10 @@ def search_query_documents(query: str, limit:int=5, config:RunnableConfig = {}):
         "active": True,
         
     }
+
+    has_perms = async_to_sync(permit.check)(f"{user_id}", "read", "document")
+    if not has_perms:
+        raise Exception("You do not have permission to do search the documents.")
 
     qs = Document.objects.filter(**default_lookups).filter(
         Q(title__icontains=query) |
@@ -57,6 +63,9 @@ def list_documents(limit:int = 5, config:RunnableConfig= {}):
         limit = 25
     configurable = config.get('configurable') or config.get('metadata')
     user_id = configurable.get('user_id')
+    has_perms = async_to_sync(permit.check)(f"{user_id}", "read", "document")
+    if not has_perms:
+        raise Exception("You do not have permission to list all documents.")
     qs = Document.objects.filter(active=True).order_by("-created_at")
     response_data = []
     for obj in qs[:limit]:
@@ -83,6 +92,9 @@ def get_document(document_id:int, config:RunnableConfig):
     if user_id is None:
         raise Exception("Invalid request for user.")
     
+    has_perms = async_to_sync(permit.check)(f"{user_id}", "read", "document")
+    if not has_perms:
+        raise Exception("You do not have permission to get individual documents.")
     try:
         obj = Document.objects.get(id=document_id, active=True)
     except Document.DoesNotExist:
@@ -112,6 +124,9 @@ def create_document(title:str, content:str, config:RunnableConfig):
     user_id = configurable.get('user_id')
     if user_id is None:
         raise Exception("Invalid request for user.")
+    has_perms = async_to_sync(permit.check)(f"{user_id}", "create", "document")
+    if not has_perms:
+        raise Exception("You do not have permission to create individual documents.")
     
     obj = Document.objects.create(title=title, content=content, owner_id=user_id, active=True)
     response_data =  {
@@ -137,6 +152,9 @@ def update_document(document_id:int, title:str =None, content:str = None, config
     user_id = configurable.get('user_id')
     if user_id is None:
         raise Exception("Invalid request for user.")
+    has_perms = async_to_sync(permit.check)(f"{user_id}", "update", "document")
+    if not has_perms:
+        raise Exception("You do not have permission to update individual documents.")
     try:
         obj = Document.objects.get(id=document_id, owner_id=user_id, active=True)
     except Document.DoesNotExist:
@@ -170,6 +188,9 @@ def delete_document(document_id:int, config:RunnableConfig):
     user_id = configurable.get('user_id')
     if user_id is None:
         raise Exception("Invalid request for user.")
+    has_perms = async_to_sync(permit.check)(f"{user_id}", "delete", "document")
+    if not has_perms:
+        raise Exception("You do not have permission to delete individual documents.")
     try:
         obj = Document.objects.get(id=document_id, active=True)
     except Document.DoesNotExist:
