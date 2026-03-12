@@ -15,13 +15,13 @@ An intelligent multi-agent Django application powered by LangGraph and Google Ge
 
 ```
 User Request
-     ↓
+       ↓
 Supervisor Agent (Router)
-     ↓
-  ┌──┴──┐
-  ↓     ↓
-Document  Movie
-Agent     Agent
+       ↓
+    ┌──┴──┐
+    ↓     ↓
+ Document  Movie
+ Agent     Agent
 ```
 
 The supervisor agent intelligently routes user requests to the appropriate specialized agent based on the query context.
